@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import { Snackbar } from '@material-ui/core'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
 import PTMap, { DownloadSegmentsButton, MapController } from '../map/PTMap'
 import { emptyBoundsArray } from './TypeSupport'
@@ -29,10 +30,14 @@ const useStyles = makeStyles({
     height: 30
   },
   mapArea: {
-    width: 'calc(100% - 360px)'
+    width: '100%'
   },
   formArea: {
     width: 360,
+  },
+  showFormArea: {
+    width: 30,
+    marginTop: 30
   },
   loadingContainer: {
     display: 'flex',
@@ -49,6 +54,7 @@ function Recording () {
   const [alertDisplayed, setAlertDisplayed] = useState(null)
 
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
+  const [rightPanelShowing, setRightPanelShowing] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
 
   const loadedBoundingBoxesRef = useRef(emptyBoundsArray())
@@ -223,15 +229,21 @@ function Recording () {
             />
           </PTMap>
         </div>
-        <div className={classes.formArea}>
-          <RightPanel
-            isLoading={isLoading}
-            segment={segmentsById[selectedSegmentId]}
-            onSegmentChanged={onSegmentChanged}
-            setAlertDisplayed={setAlertDisplayed}
-            onSegmentClose={() => setSelectedSegmentId(null)}
-          />
-        </div>
+        {rightPanelShowing &&
+          <div className={classes.formArea}>
+            <RightPanel
+              isLoading={isLoading}
+              segment={segmentsById[selectedSegmentId]}
+              onSegmentChanged={onSegmentChanged}
+              setAlertDisplayed={setAlertDisplayed}
+              onClose={() => setRightPanelShowing(false) }
+            />
+          </div>
+        }{!rightPanelShowing &&
+          <div className={classes.showFormArea} onClick={() => setRightPanelShowing(true) }>
+            <ArrowBackIcon />
+          </div>
+        }
       </div>
     </>
   )
